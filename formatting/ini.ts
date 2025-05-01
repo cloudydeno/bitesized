@@ -1,13 +1,13 @@
 // stripped-down subset of https://deno.land/x/ini@v2.1.0/ini.ts
 // doesn't handle bools, numbers, or arrays
 
-export const DEFAULT_SECTION = Symbol.for('ini default section');
+export const DEFAULT_SECTION: unique symbol = Symbol.for('ini default section');
 
 /**
  * Decode the given ini-style formatted document into a nested object.
  * @param str ini-style document
  */
-export function decode (str: string) {
+export function decode (str: string): Record<string | typeof DEFAULT_SECTION, Record<string, string>> {
   const out: Record<string | typeof DEFAULT_SECTION, Record<string, string>> = {
     [DEFAULT_SECTION]: {},
   };

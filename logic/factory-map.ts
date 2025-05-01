@@ -8,7 +8,7 @@ export class FactoryMap<K,V> extends Map<K,V> {
     super();
   }
 
-  getOrCreate(key: K) {
+  getOrCreate(key: K): V {
     let value = this.get(key);
     if (!value) {
       value = this.factoryFunc(key);

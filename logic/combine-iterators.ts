@@ -1,6 +1,6 @@
 // port of https://stackoverflow.com/a/50586391
-type IteratorBundle<T> = { index: number, result: IteratorResult<T,any> };
-export async function* combine<T>(iterable: Iterable<AsyncIterableIterator<T>>) {
+type IteratorBundle<T> = { index: number, result: IteratorResult<T,void> };
+export async function* combine<T>(iterable: Iterable<AsyncIterableIterator<T>>): AsyncGenerator<Awaited<T>, void[], void> {
   const asyncIterators = Array.from(iterable, o => o[Symbol.asyncIterator]());
   const results = [];
   let count = asyncIterators.length;

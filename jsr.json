@@ -1,0 +1,25 @@
+{
+  "name": "@cloudydeno/bitesized",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    "./crypto/curve25519": "./crypto/curve25519.ts",
+    "./formatting/filesize": "./formatting/filesize.ts",
+    "./formatting/ini": "./formatting/ini.ts",
+    "./integrations/firebase-hosting-deploy": "./integrations/firebase-hosting-deploy.ts",
+    "./integrations/google-metadata-service": "./integrations/google-metadata-service.ts",
+    "./integrations/google-service-account": "./integrations/google-service-account.ts",
+    "./integrations/shorten-url": "./integrations/shorten-url.ts",
+    "./kv/oidc-issuer": "./kv/oidc-issuer.ts",
+    "./logic/async-cache": "./logic/async-cache.ts",
+    "./logic/combine-iterators": "./logic/combine-iterators.ts",
+    "./logic/factory-map": "./logic/factory-map.ts",
+    "./logic/fixed-interval": "./logic/fixed-interval.ts",
+    "./logic/set-util": "./logic/set-util.ts",
+    "./streams/transform-text": "./streams/transform-text.ts",
+    "./system/sub-process": "./system/sub-process.ts",
+    "./system/terminal-input": "./system/terminal-input.ts",
+    "./tools/gha": "./tools/gha.ts",
+    "./tools/update-jsr": "./tools/update-jsr.ts"
+  }
+}

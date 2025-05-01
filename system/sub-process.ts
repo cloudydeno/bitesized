@@ -40,7 +40,7 @@ export class SubProcess<Tstdin extends 'piped' | 'null' = 'piped' | 'null'> {
   #stdin: WritableStream<Uint8Array> | null;
   #stderrText: Promise<string[]>;
 
-  async status() {
+  async status(): Promise<string[]> {
     const [stderr, status] = await Promise.all([
       this.#stderrText,
       this.proc.status,
@@ -53,7 +53,7 @@ export class SubProcess<Tstdin extends 'piped' | 'null' = 'piped' | 'null'> {
     return stderr;
   }
 
-  async writeInputText(text: string) {
+  async writeInputText(text: string): Promise<void> {
     const stdin = this.#stdin;
     if (!stdin) throw new Error(`This process isn't writable`);
     this.#stdin = null;
@@ -62,7 +62,9 @@ export class SubProcess<Tstdin extends 'piped' | 'null' = 'piped' | 'null'> {
     await writer.write(new TextEncoder().encode(text));
     await writer.close();
   }
-  async pipeInputFrom(source: SubProcess) {
+  async pipeInputFrom(source: SubProcess): Promise<{
+    stderr: string[];
+  }> {
     const stdin = this.#stdin;
     if (!stdin) throw new Error(`This process isn't writable`);
     this.#stdin = null;
@@ -73,24 +75,28 @@ export class SubProcess<Tstdin extends 'piped' | 'null' = 'piped' | 'null'> {
     };
   }
 
-  async captureAllOutput() {
+  async captureAllOutput(): Promise<ArrayBuffer> {
     const [data] = await Promise.all([
       new Response(this.proc.stdout).arrayBuffer(),
       this.status(),
     ]);
     return data;
   }
-  async captureAllTextOutput() {
+  async captureAllTextOutput(): Promise<string> {
     const output = await this.captureAllOutput();
     return new TextDecoder().decode(output);
   }
-  async captureAllJsonOutput() {
+  async captureAllJsonOutput(): Promise<unknown> {
     const output = await this.captureAllTextOutput();
     if (output[0] !== '{') throw new Error(`Expected JSON from "${this.opts.cmd.join(' ')}"`);
     return JSON.parse(output);
   }
 
-  async toStreamingResponse(headers: Record<string,string>) {
+  async toStreamingResponse(headers: Record<string,string>): Promise<{
+    status: number;
+    body: ReadableStream<Uint8Array<ArrayBuffer>>;
+    headers: Headers;
+  }> {
     this.status(); // throw this away because not really a way of reporting problems mid-stream
     return {
       status: 200,
@@ -109,11 +115,12 @@ export interface SubprocessErrorData {
   exitCode: number;
   foundError?: string;
 }
-function attachErrorData(error: unknown, proc: SubProcess, exitCode: number, foundError?: string) {
-  (error as SubprocessError).subproc = {
+function attachErrorData(error: unknown, proc: SubProcess, exitCode: number, foundError?: string): SubprocessError {
+  const subErr = error as SubprocessError;
+  subErr.subproc = {
     procLabel: proc.label,
     cmdLine: proc.opts.cmd,
     exitCode, foundError,
   };
-  return error;
+  return subErr;
 }

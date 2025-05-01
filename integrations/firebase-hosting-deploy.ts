@@ -7,8 +7,7 @@
 // Online documentation:
 //   https://doc.deno.land/https/danopia.net/deno/firebase-hosting-deploy@v1.ts
 
-import { gzipEncode } from "https://deno.land/x/wasm_gzip@v1.0.0/mod.ts";
-import { toHashString } from "https://deno.land/std@0.177.0/crypto/to_hash_string.ts";
+import { encodeHex } from 'jsr:@std/encoding@1.0.10/hex';
 
 export type SiteFile = {path: string, body: Uint8Array};
 export async function deployFirebaseSite(opts: {
@@ -18,7 +17,7 @@ export async function deployFirebaseSite(opts: {
   accessToken: string;
   files: Iterable<SiteFile>;
   siteConfig?: unknown;
-}) {
+}): Promise<Record<string,unknown>> {
   const authorization = `Bearer ${opts.accessToken}`;
   const jsonHeaders = {
     authorization,
@@ -54,9 +53,10 @@ export async function deployFirebaseSite(opts: {
   const fileHashes: Record<string,string> = Object.create(null);
   const hashMap = new Map<string,SiteFile&{compressed: Uint8Array}>();
   for (const file of opts.files) {
-    const compressed = gzipEncode(file.body);
+
+    const compressed = await gzipEncode(file.body);
     const hashBytes = await crypto.subtle.digest('SHA-256', compressed);
-    const hash = toHashString(hashBytes, 'hex');
+    const hash = encodeHex(hashBytes);
     hashMap.set(hash, {...file, compressed});
     fileHashes[file.path] = hash;
   }
@@ -107,4 +107,10 @@ export async function deployFirebaseSite(opts: {
     }).then(x => x.json());
   console.log('Completed Firebase deploy:', deploy.name, '@', deploy.releaseTime);
   return deploy;
+}
+
+async function gzipEncode(str: Uint8Array): Promise<Uint8Array> {
+  const stream = ReadableStream.from([str])
+    .pipeThrough(new CompressionStream("gzip"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
 }

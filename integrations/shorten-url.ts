@@ -1,7 +1,7 @@
 // Support URL shortening through da.gd
 // Never fails, just returns the long URL instead
 
-export async function shortenUrl(url: string, dagdBaseUrl = 'https://da.gd') {
+export async function shortenUrl(url: string, dagdBaseUrl = 'https://da.gd'): Promise<string> {
   const fullUrl = new URL('/s?' + new URLSearchParams({url}).toString(), dagdBaseUrl);
   try {
 

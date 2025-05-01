@@ -1,7 +1,7 @@
 // Useful for Cloud Run, Compute Engine, Kubernete Engine,
 // and I suppose anywhere else on GCloud that you're told to grab tokens from this URL.
 
-export async function fetchServiceAccountToken(scopes?: string[]) {
+export async function fetchServiceAccountToken(scopes?: string[]): Promise<TokenResponse> {
   let path = '/computeMetadata/v1/instance/service-accounts/default/token';
 
   if (scopes) {

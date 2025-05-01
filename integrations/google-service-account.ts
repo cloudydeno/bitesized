@@ -1,8 +1,8 @@
-import * as JWT from "https://deno.land/x/djwt@v2.8/mod.ts";
-import * as Base64 from "https://deno.land/std@0.177.0/encoding/base64.ts";
+import { create as createJWT } from "jsr:@zaubrik/djwt@3.0.2";
+import { decodeBase64 } from "jsr:@std/encoding@1.0.10/base64";
 
-export const _mockCurrentTime = Symbol();
-export const _mockFetch = Symbol();
+export const _mockCurrentTime: unique symbol = Symbol();
+export const _mockFetch: unique symbol = Symbol();
 
 export type ShortLivedToken = {
   accessToken: string;
@@ -14,7 +14,14 @@ export interface ServiceAccountApi {
   issueToken(scopes: string[]): Promise<ShortLivedToken>;
 }
 
-export const ServiceAccount = {
+interface ServiceAccountLoader {
+  readFromFile(path: string): Promise<ServiceAccountApi>;
+  readFromFileSync(path: string): ServiceAccountApi;
+  loadFromJsonString(jsonData: string, origin?: string): ServiceAccountApi;
+  loadFromJson(accountInfo: ServiceAccountJson, origin?: string): ServiceAccountApi;
+}
+
+export const ServiceAccount: ServiceAccountLoader = {
   // You have a choice of async or sync loading for the file.
   // Async is generally better but ServiceAccounts are often configured in constructors.
   // That's a good time to use the ...Sync version since JS constructors can't be async.
@@ -56,7 +63,7 @@ export const ServiceAccount = {
  * and I suppose anywhere else on GCloud that you're told to grab tokens from this URL.
  */
 export class MetadataServiceAccount implements ServiceAccountApi {
-  async getProjectId() {
+  async getProjectId(): Promise<string> {
     const path = '/computeMetadata/v1/project/project-id';
     const resp = await fetch(new URL(path, "http://metadata.google.internal"), {
       headers: {
@@ -66,7 +73,10 @@ export class MetadataServiceAccount implements ServiceAccountApi {
     if (!resp.ok) throw new Error(`HTTP ${resp.status} from http://metadata.google.internal${path}`);
     return (await resp.text()).trimEnd();
   }
-  async issueToken(scopes: string[]) {
+  async issueToken(scopes: string[]): Promise<{
+    accessToken: string;
+    expiresAt: Date;
+  }> {
     let path = '/computeMetadata/v1/instance/service-accounts/default/token';
 
     if (scopes?.length) {
@@ -99,7 +109,7 @@ export class PrivateKeyServiceAccount implements ServiceAccountApi {
       .split('\n').filter(x => !x.startsWith('-')).join('');
     this.#privateKey = crypto.subtle.importKey(
       'pkcs8',
-      Base64.decode(keyData),
+      decodeBase64(keyData),
       { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
       false,
       ['sign']
@@ -110,12 +120,12 @@ export class PrivateKeyServiceAccount implements ServiceAccountApi {
   [_mockCurrentTime]?: Date;
   [_mockFetch] = fetch;
 
-  getProjectId() {
+  getProjectId(): Promise<string> {
     return Promise.resolve(this.credential.project_id);
   }
 
   async issueToken(scopes: string[]): Promise<ShortLivedToken> {
-    const jwt = await JWT.create({
+    const jwt = await createJWT({
       alg: "RS256", typ: "JWT",
     }, {
       "iss": this.credential.client_email,
@@ -142,7 +152,7 @@ export class PrivateKeyServiceAccount implements ServiceAccountApi {
   }
 
   async selfSignToken(audience: string): Promise<string> {
-    return JWT.create({
+    return createJWT({
       alg: "RS256", typ: "JWT",
       kid: this.credential.private_key_id,
     }, {
@@ -173,7 +183,7 @@ export class ExternalServiceAccount implements ServiceAccountApi {
   ) {}
 
 
-  getProjectId() {
+  getProjectId(): Promise<string> {
     return Promise.resolve(this.credential.service_account_impersonation_url.split('/')[7].split('@')[1].split('.')[0]);
   }
 

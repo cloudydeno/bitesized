@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         deno-version:
-        - v1.40
+        - v2.2
         - canary
       fail-fast: false # run each branch to completion
 
@@ -26,17 +26,6 @@ jobs:
       with:
         deno-version: ${{ matrix.deno-version }}
 
-    # "file" cache: code from source control
-    # We're more selective here to prevent cross-branch contamination
-    - name: Cache file://
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/deno/gen/file
-        key: deno/${{ matrix.deno-version }}-file/v1-${{ github.ref }}-${{ github.sha }}
-        restore-keys: deno/${{ matrix.deno-version }}-file/v1-${{ github.ref }}-
-
-    # "https" cache: code from the Internet
-    # External sources won't change much so we use less precise keys
     - name: Cache https://
       uses: actions/cache@v4
       with:
@@ -47,25 +36,25 @@ jobs:
     - name: Check all modules
       run: time deno check --unstable **/*.ts
 
+    - name: Ensure jsr.json is clean
+      run: tools/update-jsr.ts
+
+    - name: Check publish rules
+      run: time deno publish --dry-run
+
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    name: Publish to JSR
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    name: Upload modules
-    permissions:
-      contents: write
 
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v4
+    - uses: denoland/setup-deno@v2
 
-    - name: Use Deno v1.40
-      uses: denoland/setup-deno@v1
-      with:
-        deno-version: v1.40
-
-    # "https" cache: code from the Internet
-    # External sources won't change much so we use less precise keys
     - name: Cache https://
       uses: actions/cache@v4
       with:
@@ -73,11 +62,7 @@ jobs:
         key: deno-https/v1-${{ github.sha }}
         restore-keys: deno-https/v1-
 
-    - name: Publish to crux.land
-      run: time ./tools/crux-publish.ts . --update-readme
+    - uses: actions/checkout@v4
 
-    - uses: EndBug/add-and-commit@v9
-      with:
-        add: README.md
-        default_author: github_actions
-        message: "Update crux.land URLs in README.md"
+    - name: Publish now
+      run: deno publish

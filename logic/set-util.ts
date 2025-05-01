@@ -1,7 +1,7 @@
 // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set#Implementing_basic_set_operations
 
-export function isSuperset<T>(set: Set<T>, subset: Set<T>) {
-  for (let elem of subset) {
+export function isSuperset<T>(set: Set<T>, subset: Set<T>): boolean {
+  for (const elem of subset) {
     if (!set.has(elem)) {
       return false;
     }
@@ -9,17 +9,17 @@ export function isSuperset<T>(set: Set<T>, subset: Set<T>) {
   return true;
 }
 
-export function union<T>(setA: Set<T>, setB: Set<T>) {
-  let _union = new Set(setA);
-  for (let elem of setB) {
+export function union<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  const _union = new Set(setA);
+  for (const elem of setB) {
     _union.add(elem);
   }
   return _union;
 }
 
-export function intersection<T>(setA: Set<T>, setB: Set<T>) {
-  let _intersection = new Set<T>();
-  for (let elem of setB) {
+export function intersection<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  const _intersection = new Set<T>();
+  for (const elem of setB) {
     if (setA.has(elem)) {
       _intersection.add(elem);
     }
@@ -27,9 +27,9 @@ export function intersection<T>(setA: Set<T>, setB: Set<T>) {
   return _intersection;
 }
 
-export function symmetricDifference<T>(setA: Set<T>, setB: Set<T>) {
-  let _difference = new Set(setA);
-  for (let elem of setB) {
+export function symmetricDifference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  const _difference = new Set(setA);
+  for (const elem of setB) {
     if (_difference.has(elem)) {
       _difference.delete(elem);
     } else {
@@ -39,9 +39,9 @@ export function symmetricDifference<T>(setA: Set<T>, setB: Set<T>) {
   return _difference;
 }
 
-export function difference<T>(setA: Set<T>, setB: Set<T>) {
-  let _difference = new Set(setA);
-  for (let elem of setB) {
+export function difference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  const _difference = new Set(setA);
+  for (const elem of setB) {
     _difference.delete(elem);
   }
   return _difference;

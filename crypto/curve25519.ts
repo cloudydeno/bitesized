@@ -2,7 +2,7 @@
 // difference: uses /std/encoding for hex-decoding
 // also compacted to fit within 20k quota
 
-import { decode } from "https://deno.land/std@0.177.0/encoding/hex.ts";
+import { decodeHex } from "jsr:@std/encoding@1.0.10/hex";
 
 /** Hopefully a somewhat timing-attack-robust buffer equality check. */
 export function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
@@ -640,8 +640,8 @@ export class Curve25519 {
     let secretKey, publicKey, sp;
 
     for (let i = 0, len = key.length; i < len; i++) {
-      secretKey = decodeString(key[i].secretKey);
-      publicKey = decodeString(key[i].publicKey);
+      secretKey = decodeHex(key[i].secretKey);
+      publicKey = decodeHex(key[i].publicKey);
 
       if (
         !constantTimeEqual(this.generateKeys(secretKey)!.publicKey, publicKey)
@@ -652,9 +652,9 @@ export class Curve25519 {
 
     // scalar multiplication
     for (let i = 0, len = mul.length; i < len; i++) {
-      secretKey = decodeString(mul[i].secretKey);
-      publicKey = decodeString(mul[i].publicKey);
-      sp = decodeString(mul[i].sp);
+      secretKey = decodeHex(mul[i].secretKey);
+      publicKey = decodeHex(mul[i].publicKey);
+      sp = decodeHex(mul[i].sp);
 
       if (!constantTimeEqual(this.scalarMult(secretKey, publicKey), sp)) {
         return false;
@@ -663,10 +663,6 @@ export class Curve25519 {
 
     return true;
   }
-}
-
-function decodeString(str: string) {
-  return decode(new TextEncoder().encode(str));
 }
 
 Deno.test('Curve25519 selftest', () => {

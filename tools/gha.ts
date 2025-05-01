@@ -2,8 +2,8 @@
 // Looks up a specific Github Actions job for the current repository
 // and tries runs the same commands locally.
 
-import { parse as parseYAML } from "https://deno.land/std@0.224.0/yaml/mod.ts";
-import * as path from "https://deno.land/std@0.224.0/path/mod.ts";
+import { parse as parseYAML } from 'jsr:@std/yaml@1.0.6/parse';
+import * as path from 'jsr:@std/path@1.0.9';
 
 const context = await findFsContext();
 

@@ -17,17 +17,17 @@ export class AsyncKeyedCache<TInput,TKey,TValue> {
   keyFunc: (input: TInput) => TKey;
   cacheRejects: boolean;
   cacheFalsey: boolean;
-  entities = new Map<TKey,TValue>();
-  promises = new Map<TKey,PromiseLike<TValue>>();
+  entities: Map<TKey,TValue> = new Map;
+  promises: Map<TKey,PromiseLike<TValue>> = new Map;
 
   // returns value only if it's already loaded
-  peek(input: TInput) {
+  peek(input: TInput): TValue | undefined {
     const key = this.keyFunc(input);
     return this.entities.get(key);
   }
 
   // returns existing value or promise, or loads the node afresh
-  get(input: TInput, loadFunc=this.loadFunc) {
+  get(input: TInput, loadFunc=this.loadFunc): TValue | PromiseLike<TValue> | undefined {
     const key = this.keyFunc(input);
     //console.log('cache is using key', key)
     if (this.entities.has(key))
@@ -41,7 +41,7 @@ export class AsyncKeyedCache<TInput,TKey,TValue> {
   }
 
   // bring a new value into the cache
-  async load(key: TKey, input: TInput, loadFunc: (input: TInput, key: TKey) => PromiseLike<TValue>) {
+  async load(key: TKey, input: TInput, loadFunc: (input: TInput, key: TKey) => PromiseLike<TValue>): Promise<TValue> {
     try {
       const value = await loadFunc(input, key);
       // TODO: check if we're still relevant before writing
@@ -61,17 +61,17 @@ export class AsyncKeyedCache<TInput,TKey,TValue> {
   }
 
   // (sync) iterate what's immediately available
-  loadedEntities() {
+  loadedEntities(): MapIterator<TValue> {
     return this.entities.values();
   }
   // wait for pending loads to finish, then iterate everything
-  async allEntities() {
+  async allEntities(): Promise<MapIterator<TValue>> {
     await Promise.all(this.promises.values());
     return this.entities.values();
   }
 
   // replace a key with specific value or promise
-  set(key: TKey, value: TValue | PromiseLike<TValue>) {
+  set(key: TKey, value: TValue | PromiseLike<TValue>): void {
     if (key == null) throw new Error(
       `BUG: AsyncCache can't set nullish key`);
     // if (typeof key !== 'string')
@@ -86,7 +86,7 @@ export class AsyncKeyedCache<TInput,TKey,TValue> {
       this.entities.set(key, value);
   }
 
-  clearAll() {
+  clearAll(): void {
     this.entities.clear();
     this.promises.clear();
   }

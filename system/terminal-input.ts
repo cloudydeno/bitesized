@@ -4,7 +4,7 @@ const CR = "\r".charCodeAt(0);
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-export function readLineFromStdinSync() {
+export function readLineFromStdinSync(): string | null {
   const c = new Uint8Array(1);
   const buf = [];
 
