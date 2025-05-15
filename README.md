@@ -1,9 +1,22 @@
-# deno-bitesized [![CI](https://github.com/cloudydeno/deno-bitesized/actions/workflows/deno-ci.yml/badge.svg)](https://github.com/cloudydeno/deno-bitesized/actions/workflows/deno-ci.yml)
+# @cloudydeno/bitesized [![CI](https://github.com/cloudydeno/deno-bitesized/actions/workflows/deno-ci.yml/badge.svg)](https://github.com/cloudydeno/deno-bitesized/actions/workflows/deno-ci.yml)
 A collection of individual, unrelated, low movement TypeScript modules.
 
-To reliably import a module from this repository, copy the link target from the below table.
-These [crux.land](https://crux.land) links are hash-based, so the returned modules will "never" change.
-Any future versions will be assigned a new URL.
+## JSR Package
+This package does not have a central export.
+You are to select your desired module and import it directly.
+All modules and their exports are listed on JSR: https://jsr.io/@cloudydeno/bitesized/doc
+
+Example:
+
+```ts
+import { filesize } from 'jsr:@cloudydeno/bitesized/formatting/filesize';
+console.log(`That's ${filesize(10000000)}!`);
+// That's 9.54 MB!
+```
+
+## Archived `crux.land` URLs
+Before JSR, each individual file was uploaded to crux.land which serves as immutable hosting of independent modules.
+These URLs still work but new commits here are not uploaded to crux.land anymore.
 
 | Module | Permanent URL |
 |---|---|
@@ -25,8 +38,6 @@ Any future versions will be assigned a new URL.
 | `system/terminal-input.ts` | [https://crux.land/54hcT](https://crux.land/54hcT#terminal-input) |
 | `tools/crux-publish.ts` | [https://crux.land/5LmSf7](https://crux.land/5LmSf7#crux-publish) |
 | `tools/gha.ts` | [https://crux.land/37p4G7](https://crux.land/37p4G7#gha) |
-
-The above table is automatically updated by Github Actions after typechecking passes with multiple Deno releases.
 
 ## Tools install
 
