@@ -1,41 +1,42 @@
-#!/usr/bin/env -S deno run --allow-read=. --allow-write=jsr.json
+#!/usr/bin/env -S deno run --allow-run=find --allow-read=jsr.json --allow-write=jsr.json
 // Based on https://github.com/oscarotero/jsr-pub/blob/main/mod.ts
 
-import { expandGlob } from "jsr:@std/fs@0.229.3/expand-glob";
-
 const contents = JSON.parse(await Deno.readTextFile('jsr.json'));
-contents.exports = await getExports([
-  "./**/*.ts*",
-]);
+contents.exports = await getExports("./**/*.ts*");
 await Deno.writeTextFile('jsr.json', JSON.stringify(contents, null, 2) + '\n');
 
-async function getExports(paths: string[]): Promise<Record<string, string>> {
+async function getExports(pathPattern: string): Promise<Record<string, string>> {
   const exports: [string, string][] = [];
-  const root = Deno.cwd();
 
-  for (const path of paths) {
-    for await (const entry of expandGlob(path, { root })) {
-      if (entry.isDirectory) {
-        continue;
-      }
-      const name = "." + entry.path.slice(root.length).replace(/\.tsx?$/, '');
-      const target = "." + entry.path.slice(root.length);
+  const result = await new Deno.Command('find', {
+    args: ['.',
+      '-wholename', pathPattern,
+      '-type', 'f',
+    ],
+    stdout: 'piped',
+  }).output();
+  if (!result.success) throw new Error(`find returned exit code ${result.code}`);
 
-      const modRegex = /\/mod$/;
-      if (name.match(modRegex)) {
-        exports.push([name.replace(modRegex, ''), target]);
-        continue;
-      }
-      if (name.match(/\/support\/[^\/]+\//)) {
-        continue;
-      }
+  const fileList = new TextDecoder().decode(result.stdout).split('\n');
+  for (const path of fileList) {
+    if (!path) continue;
+    const name = path.replace(/\.tsx?$/, '');
+    const target = path;
 
-      if (!mustBeIgnored(target)) {
-        exports.push([name, target]);
+    const modRegex = /\/mod$/;
+    if (name.match(modRegex)) {
+      exports.push([name.replace(modRegex, ''), target]);
+      continue;
+    }
+    if (name.match(/\/support\/[^\/]+\//)) {
+      continue;
+    }
 
-        if (name == './mod') {
-          exports.push([".", target]);
-        }
+    if (!mustBeIgnored(target)) {
+      exports.push([name, target]);
+
+      if (name == './mod') {
+        exports.push([".", target]);
       }
     }
   }
