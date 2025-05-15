@@ -14,6 +14,15 @@ console.log(`That's ${filesize(10000000)}!`);
 // That's 9.54 MB!
 ```
 
+## Tools install
+
+```shell
+# from git:
+deno install --global tools/gha.ts --allow-read --allow-run --allow-env
+# from published release:
+deno install --global jsr:@cloudydeno/bitesized/tools/gha --allow-read --allow-run --allow-env
+```
+
 ## Archived `crux.land` URLs
 Before JSR, each individual file was uploaded to crux.land which serves as immutable hosting of independent modules.
 These URLs still work but new commits here are not uploaded to crux.land anymore.
@@ -38,9 +47,3 @@ These URLs still work but new commits here are not uploaded to crux.land anymore
 | `system/terminal-input.ts` | [https://crux.land/54hcT](https://crux.land/54hcT#terminal-input) |
 | `tools/crux-publish.ts` | [https://crux.land/5LmSf7](https://crux.land/5LmSf7#crux-publish) |
 | `tools/gha.ts` | [https://crux.land/37p4G7](https://crux.land/37p4G7#gha) |
-
-## Tools install
-
-```shell
-deno install --global tools/gha.ts --allow-read --allow-run --allow-env
-```
