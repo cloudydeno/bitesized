@@ -18,7 +18,7 @@ console.log(`That's ${filesize(10000000)}!`);
 
 ```shell
 # from git:
-deno install --global tools/gha.ts --allow-read --allow-run --allow-env
+deno install --global tools/gha.ts --allow-read --allow-run --allow-env --config=deno.json
 # from published release:
 deno install --global jsr:@cloudydeno/bitesized/tools/gha --allow-read --allow-run --allow-env
 ```

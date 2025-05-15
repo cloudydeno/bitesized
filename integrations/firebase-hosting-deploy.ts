@@ -7,7 +7,7 @@
 // Online documentation:
 //   https://doc.deno.land/https/danopia.net/deno/firebase-hosting-deploy@v1.ts
 
-import { encodeHex } from 'jsr:@std/encoding@1.0.10/hex';
+import { encodeHex } from '@std/encoding/hex';
 
 export type SiteFile = {path: string, body: Uint8Array};
 export async function deployFirebaseSite(opts: {

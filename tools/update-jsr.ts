@@ -1,9 +1,9 @@
-#!/usr/bin/env -S deno run --allow-run=find --allow-read=jsr.json --allow-write=jsr.json
+#!/usr/bin/env -S deno run --allow-run=find --allow-read=deno.json --allow-write=deno.json
 // Based on https://github.com/oscarotero/jsr-pub/blob/main/mod.ts
 
-const contents = JSON.parse(await Deno.readTextFile('jsr.json'));
+const contents = JSON.parse(await Deno.readTextFile('deno.json'));
 contents.exports = await getExports("./**/*.ts*");
-await Deno.writeTextFile('jsr.json', JSON.stringify(contents, null, 2) + '\n');
+await Deno.writeTextFile('deno.json', JSON.stringify(contents, null, 2) + '\n');
 
 async function getExports(pathPattern: string): Promise<Record<string, string>> {
   const exports: [string, string][] = [];

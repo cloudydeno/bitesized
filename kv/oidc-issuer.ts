@@ -3,7 +3,7 @@ import {
   type Payload,
   create as createJwt,
   getNumericDate,
-} from "jsr:@zaubrik/djwt@3.0.2";
+} from "@zaubrik/djwt";
 export { getNumericDate };
 
 type StoredKey = {

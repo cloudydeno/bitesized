@@ -22,5 +22,11 @@
     "./system/terminal-input": "./system/terminal-input.ts",
     "./tools/gha": "./tools/gha.ts",
     "./tools/update-jsr": "./tools/update-jsr.ts"
+  },
+  "imports": {
+    "@std/encoding": "jsr:@std/encoding@^1.0.10",
+    "@std/path": "jsr:@std/path@^1.0.9",
+    "@std/yaml": "jsr:@std/yaml@^1.0.6",
+    "@zaubrik/djwt": "jsr:@zaubrik/djwt@^3.0.2"
   }
 }

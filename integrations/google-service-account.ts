@@ -1,5 +1,5 @@
-import { create as createJWT } from "jsr:@zaubrik/djwt@3.0.2";
-import { decodeBase64 } from "jsr:@std/encoding@1.0.10/base64";
+import { create as createJWT } from '@zaubrik/djwt';
+import { decodeBase64 } from '@std/encoding/base64';
 
 export const _mockCurrentTime: unique symbol = Symbol();
 export const _mockFetch: unique symbol = Symbol();

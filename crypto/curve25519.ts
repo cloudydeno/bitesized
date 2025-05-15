@@ -2,7 +2,7 @@
 // difference: uses /std/encoding for hex-decoding
 // also compacted to fit within 20k quota
 
-import { decodeHex } from "jsr:@std/encoding@1.0.10/hex";
+import { decodeHex } from '@std/encoding/hex';
 
 /** Hopefully a somewhat timing-attack-robust buffer equality check. */
 export function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {

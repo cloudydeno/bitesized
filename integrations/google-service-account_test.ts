@@ -4,7 +4,7 @@ import {
 
 import {
   PrivateKeyServiceAccount,
-  ServiceAccountCredential,
+  type ServiceAccountCredential,
   _mockCurrentTime,
   _mockFetch,
 } from "./google-service-account.ts";

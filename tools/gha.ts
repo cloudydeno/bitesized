@@ -2,8 +2,8 @@
 // Looks up a specific Github Actions job for the current repository
 // and tries runs the same commands locally.
 
-import { parse as parseYAML } from 'jsr:@std/yaml@1.0.6/parse';
-import * as path from 'jsr:@std/path@1.0.9';
+import { parse as parseYAML } from '@std/yaml/parse';
+import * as path from '@std/path';
 
 const context = await findFsContext();
 
