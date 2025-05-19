@@ -15,7 +15,7 @@ Deno.test('Fetching an issued JWT', async () => {
     if (!opts || typeof url != 'string') throw new Error(`mock fail`);
     if (!(opts.body instanceof FormData)) throw new Error(`mock body fail`);
 
-    assertEquals(opts.body.get('assertion'), "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJzY29wZSI6InRlc3Qtc2NvcGUiLCJhdWQiOiJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsImV4cCI6MTYwOTQ1OTIwMCwiaWF0IjoxNjA5NDU1NjAwfQ.d7WbLF29_tM457LfhZc4pq-4WdH002LjLCZaZMerl1FNTJ7r1Bf76JPc-QGq-QksIZJ33HGHjc27U9tBkoiZa1ja16-La-VoUkDrcBXIBZbGaWt7BSp4liHoX_Hnlhe8MrOctQb0MBmlkMOn_yu1Got3tyNqdrClAIpC5apWKucs_ZUzyZdxPZCjehjClY7RAkot1sTKj6rj_lVQY9lqRKgwyz4Ba7UvX7RA3YN1_5_niZTstl_dxsNv1DGHahgoT4fpmTuDikO_eoa8sfS59Ql8FXqwZVLCbIdzgi9Rc3Y9c6FzeXOn6gzR2KoBx7XjZxZlUPyToQM9Lmsw0JOb9A");
+    assertEquals(btoa(opts.body.get('assertion')?.toString()!), btoa("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJzY29wZSI6InRlc3Qtc2NvcGUiLCJhdWQiOiJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsImV4cCI6MTYwOTQ1OTIwMCwiaWF0IjoxNjA5NDU1NjAwfQ.d7WbLF29_tM457LfhZc4pq-4WdH002LjLCZaZMerl1FNTJ7r1Bf76JPc-QGq-QksIZJ33HGHjc27U9tBkoiZa1ja16-La-VoUkDrcBXIBZbGaWt7BSp4liHoX_Hnlhe8MrOctQb0MBmlkMOn_yu1Got3tyNqdrClAIpC5apWKucs_ZUzyZdxPZCjehjClY7RAkot1sTKj6rj_lVQY9lqRKgwyz4Ba7UvX7RA3YN1_5_niZTstl_dxsNv1DGHahgoT4fpmTuDikO_eoa8sfS59Ql8FXqwZVLCbIdzgi9Rc3Y9c6FzeXOn6gzR2KoBx7XjZxZlUPyToQM9Lmsw0JOb9A"));
 
     return new Response('{}');
   };
@@ -29,7 +29,7 @@ Deno.test('Self-signing a JWT', async () => {
 
   const jwt = await sa.selfSignToken('test-audience');
 
-  assertEquals(jwt, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiJ9.eyJpc3MiOiIiLCJzdWIiOiIiLCJhdWQiOiJ0ZXN0LWF1ZGllbmNlIiwiZXhwIjoxNjA5NDU5MjAwLCJpYXQiOjE2MDk0NTU2MDB9.TCkFWZYxeDpj8vY73Ds-INZXtwgymk3sXB5rTKXyX0Cdw_mbq48IsuzYC6sE1NNvi5dRPp7SaMS1laz7sAFjUyd_Lm7CPuzOrBUfLLKBvfKSf5Ol_-6rPOv9a0RVpNU_if2_JXZA4Id7S75e7HAocjS_braIiOA42zuqARHB-eM0-pz5PCStehb0Cq_Y9QVQ3cflxSMuj0RwvIUVbGcAw4YHFKyAZAki8sSBXAaqM6AnFubGji5S4UHlc2mbHyHQLphF1m42EvN5FDkYpfYvcqwrEA-GbFXsh4xjSWiA7DabohUDo07POvWvSwyIZAxPDOKcNc5h_9jdhTK6B7dL_Q");
+  assertEquals(btoa(jwt), btoa("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiJ9.eyJpc3MiOiIiLCJzdWIiOiIiLCJhdWQiOiJ0ZXN0LWF1ZGllbmNlIiwiZXhwIjoxNjA5NDU5MjAwLCJpYXQiOjE2MDk0NTU2MDB9.TCkFWZYxeDpj8vY73Ds-INZXtwgymk3sXB5rTKXyX0Cdw_mbq48IsuzYC6sE1NNvi5dRPp7SaMS1laz7sAFjUyd_Lm7CPuzOrBUfLLKBvfKSf5Ol_-6rPOv9a0RVpNU_if2_JXZA4Id7S75e7HAocjS_braIiOA42zuqARHB-eM0-pz5PCStehb0Cq_Y9QVQ3cflxSMuj0RwvIUVbGcAw4YHFKyAZAki8sSBXAaqM6AnFubGji5S4UHlc2mbHyHQLphF1m42EvN5FDkYpfYvcqwrEA-GbFXsh4xjSWiA7DabohUDo07POvWvSwyIZAxPDOKcNc5h_9jdhTK6B7dL_Q"));
 });
 
 
