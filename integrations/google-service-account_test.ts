@@ -9,7 +9,7 @@ import {
 
 Deno.test('Fetching an issued JWT', async () => {
   const sa = new PrivateKeyServiceAccount(TestCredential);
-  sa[_mockCurrentTime] = new Date(2021, 0, 1);
+  sa[_mockCurrentTime] = new Date(Date.UTC(2020, 11, 31, 23));
 
   sa[_mockFetch] = async (url, opts) => {
     if (!opts || typeof url != 'string') throw new Error(`mock fail`);
@@ -25,7 +25,7 @@ Deno.test('Fetching an issued JWT', async () => {
 
 Deno.test('Self-signing a JWT', async () => {
   const sa = new PrivateKeyServiceAccount(TestCredential);
-  sa[_mockCurrentTime] = new Date(2021, 0, 1);
+  sa[_mockCurrentTime] = new Date(Date.UTC(2020, 11, 31, 23));
 
   const jwt = await sa.selfSignToken('test-audience');
 
