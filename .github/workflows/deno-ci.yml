@@ -36,6 +36,9 @@ jobs:
     - name: Fetch dependencies
       run: deno install --frozen
 
+    - name: Run tests
+      run: deno test
+
     - name: Ensure jsr JSON is clean
       run: tools/update-jsr.ts
 

@@ -1,8 +1,5 @@
+import { assertEquals } from "@std/assert/equals";
 import { AsyncCache } from "./async-cache.ts";
-
-import {
-  assertEquals,
-} from "https://deno.land/std@0.177.0/testing/asserts.ts";
 
 Deno.test('basic async functionality', async () => {
 
