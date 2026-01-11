@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Use Deno ${{ matrix.deno-version }}
       uses: denoland/setup-deno@v2
@@ -66,7 +66,7 @@ jobs:
         key: deno-${{ github.sha }}
         restore-keys: deno-
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Publish now
       run: deno publish
