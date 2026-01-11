@@ -9,7 +9,7 @@
 
 import { encodeHex } from '@std/encoding/hex';
 
-export type SiteFile = {path: string, body: Uint8Array};
+export type SiteFile = {path: string, body: Uint8Array<ArrayBuffer>};
 export async function deployFirebaseSite(opts: {
   siteId: string;
   channelId?: string;
@@ -109,7 +109,7 @@ export async function deployFirebaseSite(opts: {
   return deploy;
 }
 
-async function gzipEncode(str: Uint8Array): Promise<Uint8Array> {
+async function gzipEncode(str: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
   const stream = ReadableStream.from([str])
     .pipeThrough(new CompressionStream("gzip"));
   return new Uint8Array(await new Response(stream).arrayBuffer());
