@@ -9,7 +9,8 @@
 
 import { encodeHex } from '@std/encoding/hex';
 
-export type SiteFile = {path: string, body: Uint8Array};
+type ByteArray = Uint8Array<ArrayBuffer>;
+export type SiteFile = {path: string, body: ByteArray};
 export async function deployFirebaseSite(opts: {
   siteId: string;
   channelId?: string;
@@ -51,7 +52,7 @@ export async function deployFirebaseSite(opts: {
   console.log('Firebase release', name, 'is', status);
 
   const fileHashes: Record<string,string> = Object.create(null);
-  const hashMap = new Map<string,SiteFile&{compressed: Uint8Array}>();
+  const hashMap = new Map<string,SiteFile&{compressed: ByteArray}>();
   for (const file of opts.files) {
 
     const compressed = await gzipEncode(file.body);
@@ -109,7 +110,7 @@ export async function deployFirebaseSite(opts: {
   return deploy;
 }
 
-async function gzipEncode(str: Uint8Array): Promise<Uint8Array> {
+async function gzipEncode(str: ByteArray): Promise<ByteArray> {
   const stream = ReadableStream.from([str])
     .pipeThrough(new CompressionStream("gzip"));
   return new Uint8Array(await new Response(stream).arrayBuffer());

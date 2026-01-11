@@ -13,11 +13,12 @@ Deno.test('Fetching an issued JWT', async () => {
 
   sa[_mockFetch] = async (url, opts) => {
     if (!opts || typeof url != 'string') throw new Error(`mock fail`);
+    if (!('body' in opts)) throw new Error('mock needs a body');
     if (!(opts.body instanceof FormData)) throw new Error(`mock body fail`);
 
     assertEquals(opts.body.get('assertion'), "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJzY29wZSI6InRlc3Qtc2NvcGUiLCJhdWQiOiJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsImV4cCI6MTYwOTQ1OTIwMCwiaWF0IjoxNjA5NDU1NjAwfQ.d7WbLF29_tM457LfhZc4pq-4WdH002LjLCZaZMerl1FNTJ7r1Bf76JPc-QGq-QksIZJ33HGHjc27U9tBkoiZa1ja16-La-VoUkDrcBXIBZbGaWt7BSp4liHoX_Hnlhe8MrOctQb0MBmlkMOn_yu1Got3tyNqdrClAIpC5apWKucs_ZUzyZdxPZCjehjClY7RAkot1sTKj6rj_lVQY9lqRKgwyz4Ba7UvX7RA3YN1_5_niZTstl_dxsNv1DGHahgoT4fpmTuDikO_eoa8sfS59Ql8FXqwZVLCbIdzgi9Rc3Y9c6FzeXOn6gzR2KoBx7XjZxZlUPyToQM9Lmsw0JOb9A");
 
-    return new Response('{}');
+    return await Response.json({});
   };
   await sa.issueToken(['test-scope']);
 });
