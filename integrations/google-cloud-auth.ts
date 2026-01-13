@@ -1,18 +1,19 @@
 import { SubProcess } from "../system/sub-process.ts";
-import { fetchServiceAccountToken } from "./google-metadata-service.ts";
+import { fetchServiceAccountToken, type TokenResponse } from "./google-metadata-service.ts";
 
 /**
  * Attempts to get a GCP auth token from two possible sources:
  * 1. A service account token from the GCP Metadata Server.
  * 2. A user token from the installed `gcloud` CLI.
  * If neither source is available, throws an Error.
+ * Returns an object including the token's remaining lifespan.
  */
-export async function fetchGoogleCloudToken(): Promise<string> {
+export async function fetchGoogleCloudAuth(): Promise<TokenResponse> {
   const reasons = [`No Google Cloud access token found. Encountered issues:`];
 
   try {
     const resp = await fetchServiceAccountToken();
-    return resp.access_token;
+    return resp;
   } catch (thrown) {
     const err = thrown as Error;
     const parts = err.message.split(': ');
@@ -25,17 +26,32 @@ export async function fetchGoogleCloudToken(): Promise<string> {
 
   try {
     const proc = new SubProcess('gcloud', {
-      cmd: ['gcloud', 'auth', 'application-default', 'print-access-token'],
+      cmd: ['gcloud', 'auth', 'print-access-token'],
       stdin: 'null',
       errorPrefix: /ERROR:/,
     });
-    return (await proc.captureAllTextOutput()).trimEnd();
+    return {
+      access_token: (await proc.captureAllTextOutput()).trimEnd(),
+      expires_in: 3600, // gcloud's default
+      token_type: 'Bearer',
+    };
   } catch (thrown) {
     const err = thrown as Error;
     reasons.push(`  - gcloud CLI: ${err.message}`);
   }
 
   throw new Error(reasons.join('\n'));
+}
+
+/**
+ * Attempts to get a GCP auth token from two possible sources:
+ * 1. A service account token from the GCP Metadata Server.
+ * 2. A user token from the installed `gcloud` CLI.
+ * If neither source is available, throws an Error.
+ */
+export async function fetchGoogleCloudToken(): Promise<string> {
+  const auth = await fetchGoogleCloudAuth();
+  return auth.access_token;
 }
 
 type ServiceAccountCredential = {
