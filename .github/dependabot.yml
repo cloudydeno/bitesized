@@ -1,7 +1,12 @@
 version: 2
 updates:
 
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: monthly
+
+  - package-ecosystem: devcontainers
+    directory: "/"
+    schedule:
+      interval: monthly

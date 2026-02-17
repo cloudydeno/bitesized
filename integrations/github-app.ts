@@ -2,48 +2,9 @@ import {
   create as createJwt,
   getNumericDate,
 } from '@zaubrik/djwt';
-import { decodeBase64 } from "@std/encoding/base64";
 import { LogicTracer } from "@cloudydeno/opentelemetry/instrumentation/async.ts";
 
 const tracer = new LogicTracer({ name: 'github-app' });
-
-export async function importPrivateKey(rawText: string): Promise<CryptoKey> {
-  const keyText = rawText
-    .replaceAll(/^[ \t]+/gm, '')
-    .replaceAll('\\n', '\n') ?? '';
-  const innerText = keyText
-    .split('\n')
-    .filter(x => x && !x.startsWith('-'))
-    .join('');
-  if (!innerText) throw new Error(`Missing Github Private Key`);
-
-  let decodedKey: Uint8Array<ArrayBuffer>;
-  if (keyText.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
-    // Wrap PKCS#1 key with PKCS#8 ASN.1 structure, so importKey can understand it
-    const rsaKey = decodeBase64(innerText);
-    const header = decodeBase64('MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKg=');
-    decodedKey = new Uint8Array(header.byteLength + rsaKey.byteLength);
-    decodedKey.set(header, 0);
-    decodedKey.set(rsaKey, header.byteLength);
-    const view = new DataView(decodedKey.buffer);
-    view.setUint16(header.byteLength - 2, rsaKey.byteLength);
-  } else if (keyText.startsWith('-----BEGIN PRIVATE KEY-----')) {
-    decodedKey = decodeBase64(innerText);
-  } else {
-    throw new Error(`Unrecognizable private key header`);
-  }
-
-  return await crypto.subtle.importKey(
-    'pkcs8',
-    decodedKey,
-    {
-      name: 'RSASSA-PKCS1-v1_5',
-      hash: 'SHA-256',
-    },
-    false,
-    ['sign'],
-  );
-}
 
 export class GithubAppIdentity {
   constructor(

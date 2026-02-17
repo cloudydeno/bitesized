@@ -43,6 +43,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@cloudydeno/opentelemetry@0.11",
       "jsr:@std/assert@1",
       "jsr:@std/encoding@1",
       "jsr:@std/path@1",
