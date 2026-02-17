@@ -6,6 +6,11 @@ import { LogicTracer } from "@cloudydeno/opentelemetry/instrumentation/async.ts"
 
 const tracer = new LogicTracer({ name: 'github-app' });
 
+type GithubToken = {
+  token: string;
+  expires_at: string;
+}
+
 export class GithubAppIdentity {
   constructor(
     public readonly clientId: string,
@@ -32,7 +37,7 @@ export class GithubAppIdentity {
       repositories?: string[],
       permissions?: Record<string, 'read' | 'write' | undefined>,
     },
-  ) {
+  ): Promise<GithubToken> {
     const resp = await fetch(`https://api.github.com/app/installations/${installationId}/access_tokens`, {
       method: 'POST',
       headers: {
@@ -53,9 +58,6 @@ export class GithubAppIdentity {
       throw new Error(`HTTP ${resp.status} from Github when creating installation token`);
     }
     const data = await resp.json();
-    return data as {
-      token: string;
-      expires_at: string;
-    };
+    return data as GithubToken;
   }
 }
