@@ -14,12 +14,16 @@ export async function importPrivateKey(rawText: string): Promise<CryptoKey> {
   if (keyText.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
     // Wrap PKCS#1 key with PKCS#8 ASN.1 structure, so importKey can understand it
     const rsaKey = decodeBase64(innerText);
+    // PKCS#8 framing template:
     const header = decodeBase64('MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKg=');
+    // Concat the PKCS#8 key onto the framing:
     decodedKey = new Uint8Array(header.byteLength + rsaKey.byteLength);
     decodedKey.set(header, 0);
     decodedKey.set(rsaKey, header.byteLength);
+    // Update the message length fields inside the framing to match:
     const view = new DataView(decodedKey.buffer);
-    view.setUint16(header.byteLength - 2, rsaKey.byteLength);
+    view.setUint16(2, decodedKey.byteLength - 4);
+    view.setUint16(24, rsaKey.byteLength);
   } else if (keyText.startsWith('-----BEGIN PRIVATE KEY-----')) {
     decodedKey = decodeBase64(innerText);
   } else {
