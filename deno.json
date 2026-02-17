@@ -1,6 +1,6 @@
 {
   "name": "@cloudydeno/bitesized",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "exports": {
     "./crypto/curve25519": "./crypto/curve25519.ts",
