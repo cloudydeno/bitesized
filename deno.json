@@ -1,12 +1,13 @@
 {
   "name": "@cloudydeno/bitesized",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "license": "MIT",
   "exports": {
     "./crypto/curve25519": "./crypto/curve25519.ts",
     "./crypto/rsa-import": "./crypto/rsa-import.ts",
     "./formatting/filesize": "./formatting/filesize.ts",
     "./formatting/ini": "./formatting/ini.ts",
+    "./integrations/api-client": "./integrations/api-client.ts",
     "./integrations/firebase-hosting-deploy": "./integrations/firebase-hosting-deploy.ts",
     "./integrations/github-app": "./integrations/github-app.ts",
     "./integrations/google-cloud-auth": "./integrations/google-cloud-auth.ts",
