@@ -5,11 +5,14 @@
 import { parse as parseYAML } from '@std/yaml/parse';
 import * as path from '@std/path';
 
+import { Cli } from '../system/cli.ts';
+const cli = new Cli('gha');
+
 const context = await findFsContext();
 
 const configFile = context.workflows.find(x => x.includes('ci'));
-if (!configFile) throw die
-  `No actions workflow file has "ci" in the name.`;
+if (!configFile) throw cli.die
+  `No actions workflow file has ${'ci'} in the name.`;
 const config = await readConfig(path.join(context.ghaDir, configFile));
 
 // By default, run all unencumbered jobs
@@ -21,7 +24,7 @@ const jobList = Deno.args.length ? Deno.args : Object
 
 for (const job of jobList) {
   const jobConfig = config.jobs[job];
-  if (!jobConfig) throw die
+  if (!jobConfig) throw cli.die
     `Didn't find job ${job} in ${configFile}.`;
 
   console.error('#', jobConfig.name || job);
@@ -41,16 +44,16 @@ for (const job of jobList) {
         stderr: 'inherit',
       }).output();
       if (!status.success) {
-        console.error(`Exit code:`, status.code);
+        cli.log `Step ${step.name} returned exit code ${status.code}`;
         success = false;
       }
       console.error();
-    } else throw die
+    } else throw cli.die
       `Tried executing unsupported job in ${job}.`;
   }
 
   if (!success)
-    throw die `❌ Some jobs resulted in an error.`;
+    throw cli.die `❌ Some jobs resulted in an error.`;
 }
 console.log('✅', 'All jobs completed successfully.\n');
 
@@ -59,10 +62,6 @@ async function findFsContext(): Promise<{
   ghaDir: string;
   workflows: string[];
 }> {
-  const cleanTail = (x: string) =>
-    x.endsWith(path.SEPARATOR)
-      ? x.slice(0, -path.SEPARATOR.length)
-      : x;
   // always stop before the homedir if we know one
   const defaultTop = cleanTail(Deno.env.get('HOME') ?? path.parse(Deno.cwd()).root);
   let current = cleanTail(Deno.cwd());
@@ -79,7 +78,11 @@ async function findFsContext(): Promise<{
     if (parent == current) break;
     current = parent;
   }
-  throw die `Didn't find any ".github/workflows" directories.`;
+  throw cli.die `Didn't find any ${'.github/workflows'} directories.`;
+}
+function cleanTail(str: string) {
+  if (!str.endsWith(path.SEPARATOR)) return str;
+  return str.slice(0, -path.SEPARATOR.length);
 }
 
 async function readConfig(path: string) {
@@ -105,9 +108,4 @@ async function readConfig(path: string) {
       }>;
     }>;
   };
-}
-
-function die(template: TemplateStringsArray, ...stuff: unknown[]) {
-  console.error(`\ngha:`, String.raw(template, ...stuff.map(x => JSON.stringify(x))), '\n');
-  Deno.exit(1);
 }

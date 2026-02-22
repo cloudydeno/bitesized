@@ -1,6 +1,6 @@
 {
   "name": "@cloudydeno/bitesized",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": "MIT",
   "exports": {
     "./crypto/curve25519": "./crypto/curve25519.ts",
@@ -21,6 +21,7 @@
     "./logic/fixed-interval": "./logic/fixed-interval.ts",
     "./logic/set-util": "./logic/set-util.ts",
     "./streams/transform-text": "./streams/transform-text.ts",
+    "./system/cli": "./system/cli.ts",
     "./system/shutdown": "./system/shutdown.ts",
     "./system/sub-process": "./system/sub-process.ts",
     "./system/terminal-input": "./system/terminal-input.ts",
