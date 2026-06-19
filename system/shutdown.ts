@@ -19,7 +19,7 @@ export function addShutdownHandler(): void {
 
   // Workaround for '--watch' interacting badly with our signal listeners
   // Issue is mentioned here: https://github.com/denoland/deno/issues/7590#issuecomment-1857591724
-  // I have not found the energy to open a proper dedicated Deno issue for this yet
+  // Likely fixed in Deno v2.8.3: https://github.com/denoland/deno/pull/35021
   globalThis.addEventListener('unload', () => {
     Deno.removeSignalListener('SIGINT', signalHandler);
     Deno.removeSignalListener('SIGTERM', signalHandler);
