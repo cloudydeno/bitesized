@@ -6,7 +6,7 @@ import { LogicTracer } from "@cloudydeno/opentelemetry/instrumentation/async.ts"
 
 const tracer = new LogicTracer({ name: 'github-app' });
 
-type GithubToken = {
+export type GithubToken = {
   token: string;
   expires_at: string;
 }
